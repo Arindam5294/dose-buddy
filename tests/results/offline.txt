@@ -1,0 +1,58 @@
+Connected to http://127.0.0.1:8788/mcp  household=test-mvcng339
+  ✔ negotiated protocol version is 2025-11-25 or later  — negotiated 2025-11-25, SDK latest 2025-11-25
+  ✔ session id issued (stateful Streamable HTTP)  — 718fb023-aecd-460a-a3c7-1496764a5a01
+  ✔ server identifies as dose-buddy  — {"name":"dose-buddy","title":"Dose Buddy","version":"1.0.0"}
+  ✔ lists all 10 tools  — add_medicine, list_schedule, what_next, mark_taken, check_missed_doses, check_interactions, explain_medicine, family_alert, daily_briefing, refill_reminder
+  ✔ every tool declares an outputSchema
+  ✔ every tool links the MCP Apps UI resource
+  ✔ MCP Apps resource listed with text/html;profile=mcp-app  — text/html;profile=mcp-app
+  ✔ UI resource is HTML with the ui/initialize handshake  — 16372 bytes
+
+Setup (a parent at home, an adult child caregiver in another city):
+  ✔ family_alert({"action":"set_caregiver","caregiver_name":"Maya","relation":"daughter","city":"Chicago",") [57 ms]  — Maya will get Dose Buddy alerts for Dad (simulated feed in this demo). Not medical advice. Ask your doctor or pharmacist.
+  ✔ add_medicine({"name":"Glucophage","strength":"500 mg","times":["8 AM","8 PM"],"pills_left":40,"now":"20) [39 ms, snapshot]  — Glucophage → metformin (curated_brand); times 08:00,20:00
+  ✔ add_medicine({"name":"Zestril","strength":"10 mg","times":["09:00"],"pills_left":26,"now":"2026-10-18T0) [17 ms, snapshot]  — Added Zestril, that's lisinopril, at 9 AM, 10 mg. 26 tablets on hand. Not medical advice. Ask your doctor or pharmacist.
+  ✔ add_medicine({"name":"Plavix","strength":"75 mg","times":["09:00"],"pills_left":4,"now":"2026-10-18T07:) [9 ms, snapshot]  — Added Plavix, that's clopidogrel, at 9 AM, 75 mg. 4 tablets on hand. Not medical advice. Ask your doctor or pharmacist.
+  ✔ add_medicine({"name":"Lipitor","strength":"20 mg","times":["21:00"],"pills_left":30,"now":"2026-10-18T0) [12 ms, snapshot]  — no curated high-risk pair among the 4 starting medicines
+  ✔ list_schedule({"now":"2026-10-18T07:35"}) [5 ms]  — 4 medicines a day. 8 AM: Glucophage. 9 AM: Plavix and Zestril. 8 PM: Glucophage. 9 PM: Lipitor. Not medical advice. Ask your doctor or pharmacist.
+
+Morning: "Alexa, what do I take now?"
+  ✔ what_next({"now":"2026-10-18T09:05"}) [6 ms]  — It's 9:05 AM. Time for Glucophage, Plavix and Zestril, one tablet each. Glucophage: the regular tablet is usually taken with meals. Next: Glucophage at 8 PM. Tell me when you have taken it. Not medical advice. Ask your doctor or pharmacist.
+  ✔ what_next({"now":"2026-10-18T09:05","lang":"es"}) [6 ms]  — Son las 9:05. Es hora de Glucophage, Plavix y Zestril, una tableta de cada uno. Glucophage: la tableta regular
+  ✔ mark_taken({"now":"2026-10-18T09:07"}) [5 ms]  — Got it. Glucophage, Plavix and Zestril marked as taken at 9:07 AM. Running low: Plavix (3) left. Time to ask for a refill. Not medical advice. Ask your doctor or pharmacist.
+
+Late morning: "Can I take Advil with my medicines?"
+  ✔ check_interactions({"candidate":"Advil","now":"2026-10-18T11:20"}) [8 ms, snapshot]  — ace-nsaid,clopidogrel-nsaid; quotes verified in FDA label text: true/true; caregiver alert: Medicine warning
+  ✔ interaction speech never tells anyone to stop a medicine  — only "please don't stop any of your medicines on your own"
+  ✔ check_interactions({"candidate":"Nurofen","now":"2026-10-18T11:25"}) [6 ms, snapshot]  — UK brand Nurofen → ibuprofen, same 2 warnings
+  ✔ check_interactions({"candidate":"Panadol","now":"2026-10-18T11:26"}) [5 ms, snapshot]  — Panadol → acetaminophen: nothing in the curated table, says the list is not a guarantee
+  ✔ check_interactions({"candidate":"Eliquis","now":"2026-10-18T11:27"}) [5 ms, snapshot]  — uncurated brand resolved live via openFDA → apixaban
+  ✔ add_medicine({"name":"Prilosec","strength":"20 mg","times":["07:00"],"pills_left":30,"now":"2026-10-18T) [8 ms, snapshot]  — Added Prilosec, that's omeprazole, at 7 AM, 20 mg. 30 tablets on hand. I found 1 warning from FDA drug labels. Plavix with Prilosec: clopidogrel may not protect against c
+  ✔ check_interactions({"lang":"es","now":"2026-10-18T11:45"}) [6 ms, snapshot]  — Encontré 1 advertencia en etiquetas de la FDA. Plavix con Prilosec: el clopidogrel puede proteger menos contra los coágu
+
+Explanations (English first, Spanish, Hindi):
+  ✔ explain_medicine({"medicine":"Lipitor","lang":"en"}) [4 ms, snapshot]  — Lipitor is atorvastatin. It lowers cholesterol and reduces the risk of heart attack and stroke. Take the tablet once a d
+  ✔ explain_medicine({"medicine":"metformina","lang":"es"}) [5 ms, snapshot]  — Glucophage es metformina. Trata la diabetes tipo 2. Ayuda a controlar la cantidad de azúcar en la sangre. La tableta reg
+  ✔ explain_medicine({"medicine":"Plavix","lang":"hi"}) [2 ms, snapshot]  — Plavix में क्लोपिडोग्रेल है। यह दोबारा हार्ट अटैक या स्ट्रोक से बचाने में मदद कर
+  ✔ explain_medicine({"medicine":"Coumadin"}) [3 ms, snapshot]  — warfarin: curated summary + live FDA boxed warning flag
+  ✔ explain_medicine({"medicine":"apixaban"}) [3 ms, snapshot]  — uncurated: falls back to the FDA label indications text, says it has no plain summary
+
+Evening: missed doses → family alert (simulated)
+  ✔ check_missed_doses({"now":"2026-10-18T22:45"}) [4 ms]  — You missed the 8 PM Glucophage and the 9 PM Lipitor. I've let Maya know. Please ask your pharmacist what to do about a missed dose. Not medical advice. Ask your doctor or pharmacist.
+  ✔ check_missed_doses({"now":"2026-10-18T22:50"}) [3 ms]  — second run: no duplicate alerts
+  ✔ refill_reminder({"now":"2026-10-18T22:50"}) [4 ms]  — Refill soon: Plavix, about 3 days left. Not medical advice. Ask your doctor or pharmacist.
+  ✔ family_alert({"action":"send","message":"I feel a bit dizzy, please call me","now":"2026-10-18T22:52"}) [3 ms]  — I've sent that to Maya. This demo uses a simulated alert feed. Not medical advice. Ask your doctor or pharmacist.
+  ✔ family_alert({"action":"feed"}) [3 ms]  — message, refill, missed_dose, missed_dose, risky_combo, risky_combo, risky_combo
+  ✔ daily_briefing({"now":"2026-10-18T22:55"}) [11 ms, snapshot]  — Here's Dad's day so far. 3 of 5 doses due so far were taken. Missed: Glucophage at 8 PM and Lipitor at 9 PM. On the current list, 1 combination to raise with the doctor: Plavix with Prilosec. Refill s
+  ✔ daily_briefing({"now":"2026-10-18T22:56","lang":"es"}) [11 ms, snapshot]  — Spanish briefing; alerts already marked seen
+
+Severe combinations (second household):
+  ✔ add_medicine({"name":"Viagra","times":["20:00"],"now":"2026-10-18T10:00"}) [4 ms, snapshot]  — Added Viagra, that's sildenafil, at 8 PM. Not medical advice. Ask your doctor or pharmacist.
+  ✔ add_medicine({"name":"Imdur","times":["08:00"],"now":"2026-10-18T10:01"}) [4 ms, snapshot]  — Added Imdur, that's isosorbide mononitrate, at 8 AM. I found 1 warning from FDA drug labels. Viagra with Imdur: a dangerous drop in blood pressure. The label sa
+  ✔ check_interactions({"candidate":"Bayer Aspirin","now":"2026-10-18T10:05"}) [4 ms, snapshot]  — I didn't find Bayer Aspirin with your medicines in my curated high-risk list. That list is small, so it is not a guarantee. The FDA labels also mentio
+  ✔ add_medicine({"name":"Coumadin","times":["18:00"],"now":"2026-10-18T10:06"}) [4 ms, snapshot]  — Added Coumadin, that's warfarin, at 6 PM. Not medical advice. Ask your doctor or pharmacist.
+  ✔ check_interactions({"candidate":"Bayer Aspirin","now":"2026-10-18T10:07"}) [4 ms, snapshot]  — warfarin + aspirin → severe, urgent (simulated) caregiver alert
+  ✔ state persists into a new MCP session  — new session c20a13c5-2b37-475a-935b-977971aaaad3; Glucophage, Zestril, Plavix, Lipitor, Prilosec
+  ✔ invalid input returns isError (no crash)  — Error: Give at least one time, like "8 AM" or "20:00".
+
+43 passed, 0 failed. household=test-mvcng339

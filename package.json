@@ -1,0 +1,31 @@
+{
+  "name": "dose-buddy",
+  "version": "1.0.0",
+  "description": "Voice-first medicine guardian for Alexa+: MCP server (Streamable HTTP) + MCP Apps card + Alexa+ (Echo Show style) simulator. Real openFDA label data, cited interaction table, simulated family alerts.",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc && mkdir -p dist/ui && cp src/ui/card.html dist/ui/card.html",
+    "start": "node dist/server.js",
+    "dev": "tsx src/server.ts",
+    "test": "node tests/mcp-client-test.mjs",
+    "test:sources": "tsx scripts/verify-sources.mts",
+    "snapshot": "tsx scripts/capture-snapshot.mts",
+    "typecheck": "tsc --noEmit"
+  },
+  "author": "Swanix",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/ext-apps": "1.7.5",
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "express": "^5.3.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "type": "module",
+  "engines": { "node": ">=20" }
+}

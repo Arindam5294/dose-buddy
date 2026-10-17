@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Dose Buddy · Alexa+ simulator</title>
+<meta name="description" content="Voice-first medicine guardian for older adults and their family, on Alexa+ via MCP. By Swanix." />
+<style>
+  :root{--bg:#070b16;--line:#1c2742;--txt:#eef3fb;--mut:#8e9cb8;--acc:#38bdf8;--acc2:#a78bfa;--ok:#34d399;--bad:#fb7185;--warn:#fbbf24}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:radial-gradient(1200px 650px at 12% -10%,#14244a 0%,transparent 60%),radial-gradient(900px 520px at 105% 110%,#2a1748 0%,transparent 55%),var(--bg);color:var(--txt);font:15px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans Devanagari",sans-serif}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 22px 6px;gap:12px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:850;letter-spacing:.2px;font-size:17px}
+  .logo{width:32px;height:32px;border-radius:10px;background:conic-gradient(from 210deg,#38bdf8,#34d399,#a78bfa,#38bdf8);display:grid;place-items:center;box-shadow:0 0 22px rgba(56,189,248,.45)}
+  .tag{color:var(--mut);font-weight:500;font-size:13px}
+  .badges{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .badge{font-size:11.5px;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:rgba(255,255,255,.02)}.badge b{color:var(--acc)}
+  .clockctl{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--mut);border:1px solid #3b3415;background:rgba(251,191,36,.06);border-radius:999px;padding:3px 6px 3px 10px}
+  .clockctl input{background:#0b1222;border:1px solid #2a3554;color:#fde68a;border-radius:8px;padding:3px 6px;font:12px ui-monospace,monospace}
+  .clockctl button{border:0;border-radius:8px;background:#22304f;color:#cfe0ff;font-size:11.5px;padding:4px 8px;cursor:pointer}
+  main{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:18px;padding:8px 22px 14px;max-width:1880px;margin:0 auto}
+  .echo{background:linear-gradient(180deg,#141c30,#0a0f1c);border:1px solid #243052;border-radius:30px;padding:16px;box-shadow:0 30px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.05)}
+  .screen{position:relative;border-radius:18px;overflow:hidden;background:#060a14;border:1px solid #121a2c;aspect-ratio:16/9.3;display:grid;grid-template-columns:42% 58%;min-height:0}
+  .lightbar{position:absolute;left:0;right:0;bottom:0;height:6px;background:linear-gradient(90deg,transparent,var(--acc),var(--acc2),var(--acc),transparent);opacity:0;transition:opacity .3s}
+  .listening .lightbar,.thinking .lightbar,.speaking .lightbar{opacity:1}
+  .thinking .lightbar{animation:sweep 1.1s linear infinite;background-size:200% 100%}.speaking .lightbar{animation:pulse .9s ease-in-out infinite}
+  @keyframes sweep{from{background-position:0 0}to{background-position:200% 0}}@keyframes pulse{50%{opacity:.35}}
+  .left{padding:22px 22px 18px;display:flex;flex-direction:column;gap:12px;min-height:0;border-right:1px solid #101828}
+  .clock{color:var(--mut);font-size:13px;display:flex;justify-content:space-between}
+  .clock #clock{color:#e6eefc;font-weight:800;font-size:15px}
+  .you{color:#b5c3db;font-size:16px;min-height:22px}
+  .you:before{content:"YOU  ";font-size:10px;letter-spacing:1.5px;color:var(--acc);font-weight:900;vertical-align:2px}
+  .reply{font-size:clamp(16px,1.42vw,22px);line-height:1.45;font-weight:620;overflow:auto;flex:1;min-height:0;padding-right:4px}
+  .reply .hi{font-family:"Noto Sans Devanagari",Inter,sans-serif}.reply.empty{color:#5e6c88;font-weight:500}
+  .status{font-size:12px;color:var(--mut);display:flex;gap:8px;align-items:center}.status i{width:8px;height:8px;border-radius:50%;background:#334}
+  .listening .status i{background:var(--bad);box-shadow:0 0 10px var(--bad)}.thinking .status i{background:var(--warn)}.speaking .status i{background:var(--acc)}
+  .right{min-height:0;position:relative;background:radial-gradient(500px 300px at 80% 0%,rgba(56,189,248,.1),transparent 70%)}
+  .right iframe{border:0;width:100%;height:100%;display:block;background:transparent}
+  .hint{position:absolute;inset:0;display:grid;place-items:center;color:#4b5873;text-align:center;padding:30px;font-size:14px;pointer-events:none}
+  .controls{display:flex;gap:10px;align-items:center;margin-top:14px}
+  .mic{flex:0 0 58px;height:58px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#7dd3fc,#3b82f6 72%);box-shadow:0 0 0 6px rgba(56,189,248,.14),0 10px 30px rgba(56,189,248,.4);color:#fff}
+  .listening .mic{background:radial-gradient(circle at 35% 30%,#fda4af,#f43f5e 70%);box-shadow:0 0 0 8px rgba(244,63,94,.18),0 0 40px rgba(244,63,94,.6)}
+  form{flex:1;display:flex;gap:8px}
+  input#q{flex:1;min-width:0;background:#0a1020;border:1px solid #243052;color:var(--txt);border-radius:14px;padding:15px 16px;font-size:15px;outline:none}
+  input#q:focus{border-color:var(--acc)}
+  button.send{border:0;border-radius:14px;padding:0 18px;background:#1b2747;color:#cfe0ff;font-weight:700;cursor:pointer}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .chip{font-size:12.5px;padding:7px 11px;border-radius:999px;border:1px solid #243052;background:#0b1222;color:#bcc8de;cursor:pointer}.chip:hover{border-color:var(--acc)}
+  aside{display:flex;flex-direction:column;gap:14px;min-height:0;max-height:calc(100vh - 80px)}
+  .phone{background:#0b0f1a;border:1px solid #27324f;border-radius:34px;padding:12px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+  .phone .scr{border-radius:24px;background:linear-gradient(180deg,#101a33,#0b1124);padding:12px 12px 10px;min-height:250px;max-height:330px;overflow:auto}
+  .phone .ph{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--mut);margin-bottom:8px}
+  .phone .ph b{color:#e6eefc;font-size:13px}
+  .sim{font-size:9.5px;font-weight:900;letter-spacing:.8px;color:#fde68a;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.4);border-radius:6px;padding:2px 6px}
+  .note{background:#151f3b;border:1px solid #233157;border-radius:14px;padding:9px 10px;margin:7px 0;font-size:12.5px;animation:pop .45s ease}
+  .note.urgent{border-color:rgba(244,63,94,.6);background:rgba(244,63,94,.10)}.note.warning{border-color:rgba(251,146,60,.5);background:rgba(251,146,60,.08)}
+  .note b{font-size:13px}.note .w{color:#7f8db0;font-size:10.5px}
+  @keyframes pop{from{transform:translateY(-6px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+  .tracebox{background:rgba(12,17,32,.8);border:1px solid var(--line);border-radius:22px;padding:12px;min-height:0;display:flex;flex-direction:column;flex:1}
+  .tracebox h3,.phone h3{margin:2px 0 8px;font-size:11px;gap:8px;letter-spacing:1.2px;text-transform:uppercase;color:var(--mut);display:flex;justify-content:space-between}
+  #trace{overflow:auto;flex:1;display:flex;flex-direction:column;gap:8px;min-height:120px}
+  .call{border:1px solid #1f2a44;border-radius:12px;padding:8px 10px;background:#0a0f1d;font-size:12.5px}
+  .call .n{display:flex;justify-content:space-between;font-weight:750;color:#d7e3fa}.call .n span{color:var(--mut);font-weight:500}
+  .call code{display:block;color:#93a6c9;font:11px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;word-break:break-all;margin-top:3px}
+  .call .w{color:#7b8aa6;font-size:11.5px}
+  .mode{font-size:10px;font-weight:900;padding:1px 6px;border-radius:5px;margin-left:6px}.mode.live{background:rgba(52,211,153,.14);color:var(--ok)}.mode.cache{background:rgba(251,191,36,.14);color:var(--warn)}.mode.snapshot{background:rgba(244,63,94,.14);color:var(--bad)}
+  .turn{font-size:11.5px;color:#6f7f9d;margin-top:4px}
+  footer{color:#56637d;font-size:11.5px;text-align:center;padding:0 0 12px}
+  @media (max-width:1100px){main{grid-template-columns:1fr}aside{max-height:none}.screen{grid-template-columns:1fr;aspect-ratio:auto}.left{border-right:0;border-bottom:1px solid #101828;min-height:220px}.right{height:560px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="4"/><path d="M12 8v8"/></svg></div>Dose Buddy <span class="tag">· voice-first medicine guardian for Alexa+</span></div>
+  <div class="badges">
+    <div class="clockctl" title="Demo clock: lets a judge test missed doses without waiting. Leave blank for the real time.">DEMO CLOCK <input id="simdate" type="date" /> <input id="simtime" type="time" /> <button id="realtime">real time</button></div>
+    <div class="badge" id="pv">MCP · connecting…</div>
+  </div>
+</header>
+<main>
+  <section>
+    <div class="echo" id="echo">
+      <div class="screen">
+        <div class="left">
+          <div class="clock"><span id="clock"></span><span id="device">Alexa+ · Echo Show simulator</span></div>
+          <div class="you" id="you">Say “Alexa, what do I take now?”</div>
+          <div class="reply empty" id="reply">Ask what to take, say when you took it, ask “Can I take Advil with my medicines?”, or ask what a medicine is for, in English, Spanish or Hindi.</div>
+          <div class="status"><i></i><span id="status">ready</span></div>
+        </div>
+        <div class="right"><iframe id="card" title="MCP Apps card" sandbox="allow-scripts allow-popups" src="/api/card"></iframe><div class="hint" id="hint">The MCP Apps card appears here.</div></div>
+        <div class="lightbar"></div>
+      </div>
+      <div class="controls">
+        <button class="mic" id="mic" title="Talk (Web Speech API)" aria-label="Talk"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+        <form id="f"><input id="q" autocomplete="off" placeholder="Type to Alexa… (English, Español, हिंदी)" /><button class="send">Send</button></form>
+      </div>
+      <div class="chips" id="chips"></div>
+    </div>
+  </section>
+  <aside>
+    <div class="phone"><h3><span>Caregiver's phone · simulated</span><span class="sim">NO SMS SENT</span></h3><div class="scr"><div class="ph"><b id="cgname">Family alerts</b><span id="cgcity"></span></div><div id="notes"><div class="w" style="color:#5e6c88;font-size:12.5px">Missed doses, serious medicine warnings and refill reminders appear here.</div></div></div></div>
+    <div class="tracebox"><h3><span>Agent trace · MCP tool calls</span><span id="uid"></span></h3><div id="trace"><div class="call w">Each utterance becomes a plan of real MCP tool calls over Streamable HTTP. They show up here.</div></div></div>
+  </aside>
+</main>
+<footer>Built by Swanix · Data: openFDA drug labels, MedlinePlus (NLM), curated cited tables · Not medical advice. Ask your doctor or pharmacist.</footer>
+<script>
+const $ = (id) => document.getElementById(id);
+const qs = new URLSearchParams(location.search);
+const HH = qs.get('household') || localStorage.getItem('db_household') || 'demo-family';
+localStorage.setItem('db_household', HH);
+const SESSION = 's-' + Math.random().toString(36).slice(2, 10);
+$('uid').textContent = 'household: ' + HH;
+if (qs.get('device')) $('device').textContent = qs.get('device');
+const echo = $('echo');
+const setState = (s, label) => { echo.className = 'echo ' + s; $('status').textContent = label || s; };
+// demo clock (?now=2026-10-18T09:05) – passed to every tool as `now`; blank = real time
+if (qs.get('now')) { const [d, t] = qs.get('now').split('T'); $('simdate').value = d; $('simtime').value = t.slice(0, 5); }
+const simNow = () => ($('simdate').value && $('simtime').value ? `${$('simdate').value}T${$('simtime').value}` : null);
+$('realtime').onclick = () => { $('simdate').value = ''; $('simtime').value = ''; };
+function tick() {
+  const n = simNow();
+  if (n) { const [h, m] = n.slice(11, 16).split(':').map(Number); const d = new Date(n + ':00'); $('clock').textContent = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) + ' · ' + `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`; }
+  else $('clock').textContent = new Date().toLocaleString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+}
+setInterval(tick, 1000); tick();
+
+const CHIPS = ['What do I take now?', 'I took my pills', 'Can I take Advil with my medicines?', '¿Para qué es la metformina?', 'What is Plavix for? In Hindi', 'Did I miss anything?', 'How many pills are left?', "Give me Dad's daily briefing"];
+$('chips').innerHTML = CHIPS.map((c) => `<button class="chip">${c}</button>`).join('');
+$('chips').onclick = (e) => { if (e.target.classList.contains('chip')) ask(e.target.textContent); };
+
+// MCP Apps host shim: answer the card's ui/initialize, then push tool results to it.
+let cardReady = false, pending = null;
+const cardWin = () => $('card').contentWindow;
+window.addEventListener('message', (ev) => {
+  if (ev.source !== cardWin()) return;
+  const m = ev.data || {};
+  if (m.method === 'ui/initialize') cardWin().postMessage({ jsonrpc: '2.0', id: m.id, result: { protocolVersion: '2026-01-26', hostInfo: { name: 'alexa-plus-simulator', version: '1.0.0' }, hostCapabilities: {}, hostContext: { theme: 'dark', displayMode: 'inline', platform: 'web' } } }, '*');
+  if (m.method === 'ui/notifications/initialized') { cardReady = true; if (pending) { pushCard(pending); pending = null; } }
+});
+function pushCard(sc) {
+  if (!cardReady) { pending = sc; return; }
+  $('hint').style.display = 'none';
+  cardWin().postMessage({ jsonrpc: '2.0', method: 'ui/notifications/tool-result', params: { content: [], structuredContent: sc } }, '*');
+}
+
+function speak(text, lang) {
+  return new Promise((resolve) => {
+    if (!('speechSynthesis' in window) || !text) return resolve();
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang === 'hi' ? 'hi-IN' : lang === 'es' ? 'es-US' : 'en-US';
+    const v = speechSynthesis.getVoices().find((x) => x.lang && x.lang.toLowerCase().startsWith(lang || 'en'));
+    if (v) u.voice = v;
+    u.rate = 0.98; // a little slower for older listeners
+    u.onend = u.onerror = () => resolve();
+    setState('speaking', 'speaking');
+    speechSynthesis.speak(u);
+    setTimeout(resolve, Math.min(40000, 800 + text.length * 75));
+  });
+}
+
+let turn = 0, seenFeed = new Set(), firstFeed = true;
+async function refreshFeed() {
+  try {
+    const r = await fetch('/api/feed?household_id=' + encodeURIComponent(HH)); const d = await r.json();
+    if (d.caregiver) { $('cgname').textContent = `${d.caregiver.name} · Dose Buddy alerts`; $('cgcity').textContent = d.caregiver.city || ''; }
+    const items = (d.feed || []).slice(0, 8);
+    if (!items.length) return;
+    $('notes').innerHTML = items.map((f) => `<div class="note ${f.severity}" ${!seenFeed.has(f.id) && !firstFeed ? '' : 'style="animation:none"'}><b>${f.title}</b> <span class="w">· ${(f.simNow || f.at || '').replace('T', ' ').slice(5, 16)}</span><br>${f.message.replace(/[<>]/g, '')}</div>`).join('');
+    items.forEach((f) => seenFeed.add(f.id)); firstFeed = false;
+  } catch (e) {}
+}
+refreshFeed(); setInterval(refreshFeed, 4000);
+
+async function ask(text) {
+  text = text.trim(); if (!text) return;
+  $('q').value = ''; $('you').textContent = text;
+  setState('thinking', 'thinking · calling MCP tools');
+  const t0 = performance.now(); let out;
+  try {
+    const r = await fetch('/api/agent', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, household_id: HH, session_id: SESSION, now: simNow() }) });
+    out = await r.json();
+  } catch (e) { out = { speech: 'I could not reach the Dose Buddy server.', calls: [] }; }
+  const ms = Math.round(performance.now() - t0);
+  const r = $('reply'); r.classList.remove('empty');
+  r.innerHTML = `<span class="${out.lang === 'hi' ? 'hi' : ''}" lang="${out.lang || 'en'}">${(out.speech || '').replace(/[<>]/g, '')}</span>`;
+  if (out.protocolVersion) $('pv').innerHTML = `MCP <b>${out.protocolVersion}</b> · Streamable HTTP`;
+  if (out.card) pushCard(out.card);
+  trace(text, out, ms); refreshFeed();
+  const label = `intent: ${out.intent || '?'} · ${out.calls ? out.calls.length : 0} tool call(s) · ${ms} ms`;
+  setState('done', label);
+  await speak(out.speech, out.lang);
+  setState('done', label);
+}
+function trace(text, out, ms) {
+  turn++;
+  const el = $('trace'); if (turn === 1) el.innerHTML = '';
+  const calls = (out.calls || []).map((c) => {
+    const mode = c.structuredContent && c.structuredContent.dataMode;
+    const args = Object.fromEntries(Object.entries(c.args || {}).filter(([k]) => !['household_id'].includes(k)));
+    return `<div class="call"><div class="n">${c.isError ? '! ' : '▸ '}${c.tool}${mode ? `<b class="mode ${mode}">${mode.toUpperCase()}</b>` : ''}<span>${c.ms} ms</span></div><div class="w">${c.why || ''}</div><code>${JSON.stringify(args)}</code></div>`;
+  }).join('');
+  const block = document.createElement('div');
+  block.innerHTML = `<div class="turn">#${turn} “${text.replace(/[<>]/g, '')}” → ${out.intent || '?'} (${out.lang || 'en'})</div>${calls || '<div class="call w">no tool call</div>'}`;
+  el.prepend(block);
+}
+$('f').onsubmit = (e) => { e.preventDefault(); ask($('q').value); };
+
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (!SR) { $('mic').title = 'Voice input not supported in this browser: type instead'; $('mic').style.opacity = .5; }
+$('mic').onclick = () => {
+  if (!SR) { $('q').focus(); return; }
+  const rec = new SR(); rec.lang = qs.get('lang') || 'en-US'; rec.interimResults = true; rec.maxAlternatives = 1;
+  setState('listening', 'listening…');
+  rec.onresult = (e) => { const t = Array.from(e.results).map((x) => x[0].transcript).join(' '); $('you').textContent = t; if (e.results[e.results.length - 1].isFinal) ask(t); };
+  rec.onerror = () => setState('done', 'did not catch that: type instead');
+  rec.onend = () => { if (echo.classList.contains('listening')) setState('done', 'ready'); };
+  rec.start();
+};
+fetch('/health').then((r) => r.json()).then((h) => { if (h.negotiatedProtocolVersion) $('pv').innerHTML = `MCP <b>${h.negotiatedProtocolVersion}</b> · Streamable HTTP${h.offlineMode ? ' · OFFLINE SNAPSHOT' : ''}`; }).catch(() => {});
+if (qs.get('q')) setTimeout(() => ask(qs.get('q')), 700);
+</script>
+</body>
+</html>

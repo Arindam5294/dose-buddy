@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dose Buddy card</title>
+<style>
+  :root{--bg:#0b1020;--panel:#121a2e;--line:#22304d;--txt:#eef3fb;--mut:#93a3bf;--ok:#34d399;--due:#38bdf8;--warn:#fbbf24;--bad:#fb7185;--sev:#f43f5e;--acc:#a78bfa}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:transparent;color:var(--txt);font:16px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans Devanagari",sans-serif}
+  .card{background:linear-gradient(165deg,#16203a 0%,#0f172b 65%,#0d1426 100%);border:1px solid var(--line);border-radius:20px;padding:18px 20px 14px;position:relative;overflow:hidden}
+  .card:before{content:"";position:absolute;right:-90px;top:-110px;width:300px;height:300px;background:radial-gradient(circle,rgba(56,189,248,.16),transparent 65%);pointer-events:none}
+  .k{font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:var(--mut);font-weight:800}
+  h2{margin:4px 0 10px;font-size:26px;line-height:1.15}
+  .sub{color:var(--mut);font-size:13.5px}
+  .row{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid #1f2a44;border-radius:14px;background:#0d1528;margin:7px 0}
+  .row .t{font-weight:800;font-size:17px;min-width:76px;color:#cfe3ff}
+  .row .n{flex:1;min-width:0}.row .n b{font-size:17px}.row .n div{color:var(--mut);font-size:13px}
+  .st{font-size:11.5px;font-weight:900;letter-spacing:.8px;padding:4px 9px;border-radius:999px;white-space:nowrap}
+  .st.taken{background:rgba(52,211,153,.15);color:var(--ok)}.st.due{background:rgba(56,189,248,.16);color:var(--due);box-shadow:0 0 0 2px rgba(56,189,248,.35)}
+  .st.upcoming{background:#1a2440;color:#9fb0cf}.st.missed,.st.overdue{background:rgba(251,113,133,.16);color:var(--bad)}.st.skipped{background:#2a2f3f;color:#b8c0d0}
+  .big{font-size:20px;line-height:1.35;font-weight:650;margin:6px 0 10px}
+  .warn{border-radius:16px;padding:12px 14px;margin:9px 0;border:1px solid}
+  .warn.severe{background:rgba(244,63,94,.12);border-color:rgba(244,63,94,.55)}.warn.high{background:rgba(251,146,60,.11);border-color:rgba(251,146,60,.5)}.warn.moderate{background:rgba(251,191,36,.09);border-color:rgba(251,191,36,.42)}.warn.label{background:#101a30;border-color:#2a3a5c}
+  .warn .h{display:flex;justify-content:space-between;gap:10px;align-items:center;font-weight:850;font-size:17px}
+  .sevp{font-size:11px;font-weight:900;letter-spacing:1px;padding:3px 8px;border-radius:7px;text-transform:uppercase}
+  .sevp.severe{background:#f43f5e;color:#fff}.sevp.high{background:#fb923c;color:#1b1206}.sevp.moderate{background:#fbbf24;color:#1b1406}.sevp.label{background:#334155;color:#e2e8f0}
+  .risk{margin:5px 0 7px;font-size:15.5px}
+  .src{font-size:12.5px;color:#b9c7e0;background:#0a1122;border:1px solid #1d2943;border-radius:10px;padding:8px 10px}
+  .src q{color:#e6eefc;font-style:italic}.src a{color:#7dd3fc;text-decoration:none}
+  .ver{display:inline-block;margin-left:6px;font-size:10.5px;font-weight:900;color:var(--ok);letter-spacing:.6px}
+  .disc{margin-top:12px;padding:10px 12px;border-radius:12px;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.35);font-weight:750;font-size:14.5px}
+  .foot{display:flex;justify-content:space-between;gap:10px;margin-top:10px;color:#71819e;font-size:11.5px;flex-wrap:wrap}
+  .mode{font-weight:900;padding:2px 7px;border-radius:6px;font-size:10.5px}.mode.live{background:rgba(52,211,153,.15);color:var(--ok)}.mode.cache{background:rgba(251,191,36,.15);color:var(--warn)}.mode.snapshot{background:rgba(251,113,133,.15);color:var(--bad)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .tile{background:#0d1528;border:1px solid #1f2a44;border-radius:14px;padding:10px 12px}.tile b{display:block;font-size:13px;color:var(--mut);font-weight:700;margin-bottom:3px}.tile span{font-size:15.5px}
+  .stat{font-size:40px;font-weight:900;line-height:1}.stat small{font-size:15px;color:var(--mut);font-weight:700}
+  .feed{border-left:3px solid var(--warn);padding:8px 10px;margin:7px 0;background:#0d1528;border-radius:0 12px 12px 0;font-size:14px}
+  .feed.urgent{border-color:var(--sev)}.feed.info{border-color:var(--due)}.feed b{font-size:14.5px}
+  .sim{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:.8px;color:#fde68a;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.4);border-radius:6px;padding:2px 7px}
+  .hi{font-family:"Noto Sans Devanagari",Inter,sans-serif}
+  .bar{height:10px;border-radius:999px;background:#1a2440;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:linear-gradient(90deg,#34d399,#38bdf8)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+// Minimal MCP Apps view: handshake with the host (ui/initialize), then render ui/notifications/tool-result.
+(function () {
+  let rid = 1;
+  const send = (m) => window.parent && window.parent.postMessage(m, '*');
+  send({ jsonrpc: '2.0', id: rid++, method: 'ui/initialize', params: { protocolVersion: '2026-01-26', appInfo: { name: 'dose-buddy-card', version: '1.0.0' }, appCapabilities: {} } });
+  window.addEventListener('message', (ev) => {
+    const m = ev.data || {};
+    if (m.jsonrpc !== '2.0') return;
+    if (m.id && m.result && m.result.protocolVersion) send({ jsonrpc: '2.0', method: 'ui/notifications/initialized', params: {} });
+    if (m.method === 'ui/notifications/tool-result') render((m.params && (m.params.structuredContent || m.params)) || {});
+  });
+  window.__render = render;
+  const qs = new URLSearchParams(location.search);
+  if (qs.get('data')) try { render(JSON.parse(qs.get('data'))); } catch (e) {}
+
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const t12 = (hhmm) => { if (!hhmm) return ''; const [h, m] = hhmm.split(':').map(Number); return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`; };
+  const ST = { taken: 'TAKEN', due: 'TAKE NOW', upcoming: 'LATER', missed: 'MISSED', overdue: 'NOT TAKEN', skipped: 'SKIPPED' };
+  const disc = (d) => d.disclaimer ? `<div class="disc ${d.lang === 'hi' ? 'hi' : ''}">⚕ ${esc(d.disclaimer)}</div>` : '';
+  const foot = (d, extra) => {
+    const mode = d.dataMode;
+    const lbl = mode === 'live' ? 'LIVE openFDA' : mode === 'cache' ? 'CACHED openFDA (last live fetch)' : mode === 'snapshot' ? 'FALLBACK SNAPSHOT' : '';
+    return `<div class="foot"><span>${lbl ? `<span class="mode ${mode}">${lbl}</span>` : ''} ${d.now && d.now.simulated ? 'demo clock ' + esc(d.now.iso.replace('T', ' ')) : ''}</span><span>${esc(extra || 'Dose Buddy · MCP Apps card')}</span></div>`;
+  };
+  const slotRow = (s) => `<div class="row"><div class="t">${t12(s.time)}</div><div class="n"><b>${esc(s.med)}</b><div>${esc(s.label)}${s.units ? ' · ' + s.units + ' tab' : ''}${s.withFood ? ' · ' + esc(s.withFood) : ''}</div></div><span class="st ${s.status}">${ST[s.status] || s.status}</span></div>`;
+  const srcBox = (s) => `<div class="src">Source: <b>${esc(s.label)}</b>${s.section ? ', ' + esc(s.section) : ''}${s.quote ? `<br><q>${esc(s.quote)}</q>` : ''}${s.verifiedInLiveLabel ? '<span class="ver">✓ VERIFIED IN FDA LABEL TEXT</span>' : ''}<br><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.url)}</a>${s.curated === false ? ' · openFDA label text scan' : ''}</div>`;
+
+  function schedule(d, title) {
+    const slots = d.slots || [];
+    return `<div class="card"><div class="k">${esc(title || "Today's medicines")} · ${esc(d.patient || '')}</div>
+      ${d.speech && d.kind === 'what_next' ? `<div class="big">${esc(d.speech)}</div>` : ''}
+      ${slots.map(slotRow).join('') || '<div class="sub">No medicines yet.</div>'}
+      ${disc(d)}${foot(d)}</div>`;
+  }
+  function interactions(d) {
+    const hits = d.hits || [], men = d.labelMentions || [];
+    const head = d.candidate ? `${esc(d.candidate.name)} + current medicines` : 'Medicine list check';
+    return `<div class="card"><div class="k">Interaction check</div><h2>${head}</h2>
+      ${d.candidate ? `<div class="sub">${esc(d.candidate.name)} = ${esc((d.candidate.ingredients || []).join(' + '))}${d.candidate.brandSource ? ` · <a style="color:#7dd3fc" href="${esc(d.candidate.brandSource)}" target="_blank">brand source</a>` : ''} (curated brand map)</div>` : ''}
+      ${hits.length ? '' : '<div class="big" style="color:#a7f3d0">No pair from the curated high-risk table.</div>'}
+      ${hits.map((h) => `<div class="warn ${h.severity}"><div class="h"><span>${esc(h.a.name)} + ${esc(h.b.name)}</span><span class="sevp ${h.severity}">${esc(h.severityLabel)}</span></div><div class="risk">${esc(h.risk)}</div>${srcBox(h.source)}</div>`).join('')}
+      ${men.slice(0, 2).map((m) => `<div class="warn label"><div class="h"><span>${esc(m.a.name)} label mentions ${esc(m.b.name)}</span><span class="sevp label">${esc(m.severityLabel)}</span></div><div class="src">“${esc(m.excerpt)}”<br><a href="${esc(m.source.url)}" target="_blank">${esc(m.source.url)}</a></div></div>`).join('')}
+      ${d.alert ? `<div class="feed ${d.alert.severity}"><span class="sim">SIMULATED ALERT</span> <b>${esc(d.alert.title)}</b> → ${esc(d.alert.to)}</div>` : ''}
+      ${disc(d)}${foot(d, d.coverageNote)}</div>`;
+  }
+  function explanation(d) {
+    const hi = d.lang === 'hi';
+    const L = { en: ['What it is for', 'Food', 'Common side effects', 'Good to know'], es: ['Para qué sirve', 'Alimentos', 'Efectos secundarios', 'Bueno saber'], hi: ['यह किस लिए है', 'खाना', 'आम असर', 'ध्यान दें'] }[d.lang || 'en'];
+    return `<div class="card ${hi ? 'hi' : ''}"><div class="k">${{ en: 'Explained simply', es: 'Explicado de forma sencilla', hi: 'सरल भाषा में' }[d.lang || 'en']} · ${esc((d.lang || 'en').toUpperCase())}</div>
+      <h2>${esc(d.medicine)}${d.brand ? ` <span class="sub">= ${esc(d.ingredients.join(' + '))}</span>` : ''}</h2>
+      ${(d.sections || []).map((s) => `${(d.sections.length > 1) ? `<div class="k" style="margin-top:8px">${esc(s.name)}</div>` : ''}
+        ${s.facts ? `<div class="grid"><div class="tile" style="grid-column:1/3"><b>${L[0]}</b><span>${esc(s.facts.purpose)}</span></div><div class="tile"><b>${L[1]}</b><span>${esc(s.facts.food)}</span></div><div class="tile"><b>${L[2]}</b><span>${esc(s.facts.sideEffects)}</span></div>${s.facts.tip ? `<div class="tile" style="grid-column:1/3"><b>${L[3]}</b><span>${esc(s.facts.tip)}</span></div>` : ''}</div>` : ''}
+        ${s.fda && s.fda.hasBoxedWarning ? `<div class="warn severe" style="margin-top:8px"><div class="h"><span>FDA boxed warning</span><span class="sevp severe">BOXED</span></div><div class="src">${esc(s.fda.boxedWarningExcerpt)}<br><a href="${esc(s.fda.url)}" target="_blank">${esc(s.fda.url)}</a></div></div>` : ''}
+        <div class="src" style="margin-top:8px">${s.medlineplus ? `MedlinePlus: <a href="${esc(s.medlineplus)}" target="_blank">${esc(s.medlineplus)}</a>${s.factsLang && s.factsLang !== d.lang ? ' (shown in English)' : ''}${d.lang === 'hi' ? ' · हिंदी अनुवाद: Dose Buddy' : ''}<br>` : ''}${s.fda ? `FDA label (${esc(s.fda.effectiveTime || '')}): <a href="${esc(s.fda.url)}" target="_blank">DailyMed set ${esc(s.fda.setId.slice(0, 8))}…</a>` : ''}</div>`).join('')}
+      ${disc(d)}${foot(d, 'MedlinePlus (NLM) + openFDA')}</div>`;
+  }
+  function feedItems(items) { return (items || []).map((f) => `<div class="feed ${f.severity}"><b>${esc(f.title)}</b> <span class="sub">→ ${esc(f.to)} · ${esc((f.simNow || f.at || '').replace('T', ' ').slice(0, 16))}</span><br>${esc(f.message)}</div>`).join(''); }
+  function missed(d) {
+    return `<div class="card"><div class="k">Missed-dose check</div><h2>${d.newlyMissed.length ? `${d.newlyMissed.length} missed dose${d.newlyMissed.length > 1 ? 's' : ''}` : 'All on track'}</h2>
+      <div class="big">${esc(d.speech.replace(/\s*Not medical advice.*$/, ''))}</div>
+      ${d.alerts.length ? `<div><span class="sim">SIMULATED ALERT · NO SMS SENT</span></div>${feedItems(d.alerts)}` : ''}
+      ${disc(d)}${foot(d, d.simulatedNote)}</div>`;
+  }
+  function briefing(d) {
+    const a = d.adherence || {}; const pct = a.due ? Math.round((a.taken / a.due) * 100) : 100;
+    return `<div class="card"><div class="k">Caregiver briefing · ${esc(d.patient)}${d.caregiver ? ' → ' + esc(d.caregiver.name) : ''}</div>
+      <div class="grid" style="margin-top:8px"><div class="tile"><b>Doses so far</b><div class="stat">${a.taken}<small> / ${a.due} taken</small></div><div class="bar"><i style="width:${pct}%"></i></div></div>
+      <div class="tile"><b>Missed</b><span>${(a.missed || []).length ? (a.missed || []).map((m) => esc(m.med) + ' ' + t12(m.time)).join(', ') : 'None'}</span></div>
+      <div class="tile"><b>Flagged today</b><span>${d.lastQuestion && d.lastQuestion.candidate ? `Asked about ${esc(d.lastQuestion.candidate)}: ${d.lastQuestion.hits.length} warning(s)` : 'Nothing new'}</span></div>
+      <div class="tile"><b>Refill soon</b><span>${(d.refills || []).length ? d.refills.map((r) => `${esc(r.med)} · ${r.daysLeft} d`).join(', ') : 'None'}</span></div></div>
+      ${(d.interactions && d.interactions.hits || []).slice(0, 2).map((h) => `<div class="warn ${h.severity}"><div class="h"><span>${esc(h.a.name)} + ${esc(h.b.name)}</span><span class="sevp ${h.severity}">${esc(h.severityLabel)}</span></div><div class="risk">${esc(h.risk)}</div>${srcBox(h.source)}</div>`).join('')}
+      ${d.feed && d.feed.length ? `<div class="k" style="margin-top:10px">Family feed <span class="sim">SIMULATED</span></div>${feedItems(d.feed.slice(0, 3))}` : ''}
+      ${disc(d)}${foot(d, d.simulatedNote)}</div>`;
+  }
+  function feed(d) { return `<div class="card"><div class="k">Family alert feed · ${esc(d.caregiver ? d.caregiver.name : '')}</div><div><span class="sim">SIMULATED · NO SMS / PUSH</span></div>${feedItems(d.feed) || '<div class="sub">No alerts.</div>'}${disc(d)}${foot(d, d.simulatedNote)}</div>`; }
+  function refills(d) { return `<div class="card"><div class="k">Pill counts & refills</div>${(d.rows || []).map((r) => `<div class="row"><div class="n"><b>${esc(r.med)}</b><div>${esc(r.label)} · ${r.perDay}/day</div></div><span class="st ${r.daysLeft != null && r.daysLeft <= r.threshold ? 'missed' : 'taken'}">${r.pillsLeft == null ? 'NO COUNT' : r.pillsLeft + ' LEFT · ' + r.daysLeft + ' DAYS'}</span></div>`).join('')}${disc(d)}${foot(d)}</div>`; }
+  function added(d) { return `<div class="card"><div class="k">Added to the schedule</div><h2>${esc(d.med.brand || d.med.name)} <span class="sub">= ${esc(d.med.ingredients.join(' + '))}</span></h2><div class="sub">${d.resolution.via === 'curated_brand' ? 'Curated brand map' : d.resolution.via === 'openfda' ? 'Resolved via openFDA' : d.resolution.via === 'curated_generic' ? 'Generic name' : 'Not in curated list'}${d.resolution.brandSource ? ` · <a style="color:#7dd3fc" href="${esc(d.resolution.brandSource)}" target="_blank">source</a>` : ''}</div>
+    <div class="row"><div class="n"><b>${(d.med.times || []).map(t12).join(' · ')}</b><div>${esc(d.med.strength || '')} ${d.med.unitsPerDose} tab${d.med.withFood ? ' · ' + esc(d.med.withFood) : ''}</div></div><span class="st taken">${d.med.pillsLeft != null ? d.med.pillsLeft + ' ON HAND' : 'SAVED'}</span></div>
+    ${d.interactions && d.interactions.hits.length ? d.interactions.hits.map((h) => `<div class="warn ${h.severity}"><div class="h"><span>${esc(h.a.name)} + ${esc(h.b.name)}</span><span class="sevp ${h.severity}">${esc(h.severityLabel)}</span></div><div class="risk">${esc(h.risk)}</div>${srcBox(h.source)}</div>`).join('') : ''}
+    ${d.interactions && d.interactions.alert ? `<div class="feed ${d.interactions.alert.severity}"><span class="sim">SIMULATED ALERT</span> <b>${esc(d.interactions.alert.title)}</b> → ${esc(d.interactions.alert.to)}</div>` : ''}
+    ${disc(d)}${foot(d)}</div>`; }
+  function logged(d) { return schedule(d, 'Dose logged'); }
+
+  function render(d) {
+    const el = document.getElementById('root');
+    const map = { schedule, what_next: (x) => schedule(x, 'What to take now'), dose_logged: logged, interactions, explanation, missed_check: missed, briefing, feed, refills, medicine_added: added };
+    el.innerHTML = (map[d.kind] || ((x) => `<div class="card"><pre style="white-space:pre-wrap">${esc(JSON.stringify(x, null, 1)).slice(0, 2000)}</pre></div>`))(d);
+  }
+})();
+</script>
+</body>
+</html>

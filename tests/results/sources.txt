@@ -1,0 +1,52 @@
+✔ warfarin-antiplatelet        live  Warfarin sodium tablets (FDA label): "Antiplatelet Agents aspirin, cilostazol, clopidogrel, dipyri…"
+✔ warfarin-nsaid               live  Warfarin sodium tablets (FDA label): "Non-steroidal Anti-Inflammatory Agents celecoxib, diclofenac…"
+✔ warfarin-ssri                live  Warfarin sodium tablets (FDA label): "Serotonin Reuptake Inhibitors citalopram, desvenlafaxine, du…"
+✔ sildenafil-nitrate           live  Sildenafil tablets (FDA label): "Administration of sildenafil tablets to patients using nitri…"
+✔ tramadol-ssri                live  Tramadol hydrochloride extended-release tablets (FDA label): "Discontinue tramadol hydrochloride extended-release tablets …"
+✔ clopidogrel-omeprazole       live  Clopidogrel tablets (FDA label): "Avoid concomitant use of clopidogrel with omeprazole or esom…"
+✔ clopidogrel-nsaid            live  Clopidogrel tablets (FDA label): "Nonsteroidal anti-inflammatory drugs (NSAIDs), warfarin, sel…"
+✔ ace-potassium                live  Ramipril (FDA label): "Potassium-sparing diuretics (spironolactone, amiloride, tria…"
+✔ arb-potassium                live  Telmisartan (FDA label): "on potassium supplements, potassium-sparing diuretics, potas…"
+✔ ace-nsaid                    live  Lisinopril tablets (FDA label): "NSAIDS: Increased risk of renal impairment and loss of antih…"
+✔ arb-nsaid                    live  Telmisartan (FDA label): "In patients who are elderly, volume-depleted (including thos…"
+✔ ibuprofen-aspirin            live  Ibuprofen tablets (FDA label): "concomitant administration of ibuprofen and aspirin is not g…"
+✔ ssri-bleeding                live  Sertraline hydrochloride tablets (FDA label): "Drugs that Interfere with Hemostasis (Non-selective NSAIDs, …"
+✔ metformin-contrast           live  Metformin hydrochloride tablets (FDA label): "Administration of intravascular iodinated contrast agents in…"
+✔ atorvastatin-clarithromycin  live  Atorvastatin calcium tablets (FDA label): "In patients taking clarithromycin or itraconazole, do not ex…"
+✔ amlodipine-simvastatin       live  Amlodipine besylate tablets (FDA label): "Do not exceed doses greater than 20 mg daily of simvastatin…"
+✔ levothyroxine-binders        live  Levothyroxine sodium tablets (FDA label): "Administer levothyroxine sodium tablets at least 4 hours apa…"
+✔ label metformin                METFORMIN HYDROCHLORIDE (live)
+✔ label lisinopril               LISINOPRIL (live)
+✔ label clopidogrel              CLOPIDOGREL BISULFATE (live)
+✔ label atorvastatin             ATORVASTATIN CALCIUM (live)
+✔ label ibuprofen                IBUPROFEN (live)
+✔ label acetaminophen            ACETAMINOPHEN (live)
+✔ label aspirin                  ASPIRIN (live)
+✔ label omeprazole               OMEPRAZOLE (live)
+✔ label esomeprazole             ESOMEPRAZOLE MAGNESIUM (live)
+✔ label warfarin                 WARFARIN SODIUM (live)
+✔ label amlodipine               AMLODIPINE BESYLATE (live)
+✔ label levothyroxine            LEVOTHYROXINE SODIUM (live)
+✔ label losartan                 LOSARTAN POTASSIUM (live)
+✔ label telmisartan              TELMISARTAN (live)
+✔ label ramipril                 RAMIPRIL (live)
+✔ label enalapril                ENALAPRIL MALEATE (live)
+✔ label simvastatin              SIMVASTATIN (live)
+✔ label naproxen                 NAPROXEN (live)
+✔ label diclofenac               DICLOFENAC SODIUM (live)
+✔ label sertraline               SERTRALINE HYDROCHLORIDE (live)
+✔ label escitalopram             ESCITALOPRAM OXALATE (live)
+✔ label fluoxetine               FLUOXETINE HYDROCHLORIDE (live)
+✔ label tramadol                 TRAMADOL HYDROCHLORIDE (live)
+✔ label sildenafil               SILDENAFIL CITRATE (live)
+✔ label nitroglycerin            NITROGLYCERIN (live)
+✔ label isosorbide mononitrate   ISOSORBIDE MONONITRATE (live)
+✔ label isosorbide dinitrate     ISOSORBIDE DINITRATE (live)
+✔ label spironolactone           SPIRONOLACTONE (live)
+✔ label potassium chloride       POTASSIUM CHLORIDE (live)
+✔ label clarithromycin           CLARITHROMYCIN (live)
+✔ label glimepiride              GLIMEPIRIDE (live)
+✔ label pantoprazole             PANTOPRAZOLE SODIUM (live)
+brands: 47 curated, all mapped to curated ingredients with a source URL
+
+all 17 cited quotes verified in FDA label text; 32 labels resolve
